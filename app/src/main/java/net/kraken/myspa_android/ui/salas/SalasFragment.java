@@ -188,6 +188,25 @@ public class SalasFragment extends Fragment {
             @Override
             public void onResponse(String response) {
                 Log.i("info", response);
+                JsonObject json = null;
+                try {
+                    json = JsonParser.parseString(response).getAsJsonObject();
+                }catch (Exception e){
+                    e.printStackTrace();
+                    Log.i("info","Exception controlada");
+                }
+
+                if(json != null && json.get("error") != null){
+                    activityMain.mostrarMensaje("", json.get("error").getAsString());
+                    return;
+                } else {
+                    AdapterSala adapter = null;
+                    TypeToken<List<Sala>> typeToken = new TypeToken<List<Sala>>(){};
+                    salas = new Gson().fromJson(response, typeToken.getType());
+
+                    adapter = new AdapterSala(activityMain, salas);
+                    rclvSalas.setAdapter(adapter);
+                }
             }
         };
 
